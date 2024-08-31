@@ -1,0 +1,71 @@
+.input-row {
+  position: relative;
+  margin: 10px 0 0;
+  max-width: 300px;
+  width: 100%;
+  &__label {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    pointer-events:none;
+    transition: 0.5s ease all;
+  }
+  &__input {
+    padding: 10px 15px;
+    max-width: 300px;
+    border-bottom: gray 1px solid;
+    transition: .7s ease all;
+    &:focus {
+      border-bottom: transparent 1px solid;
+    }
+    &:valid {
+      border-bottom: transparent 1px solid;
+    }
+    &:valid ~ label {
+      top: -10px;
+      font-size: 10px;
+      color: gray;
+      left: 0;
+    }
+    &:focus ~ label {
+      top: -10px;
+      font-size: 10px;
+      color: gray;
+      left: 0;
+    }
+    &:focus ~ .input-row__bar:before {
+      width: 50%;
+    }
+    &:focus ~ .input-row__bar:after {
+      width: 50%;
+    }
+    &:valid ~ .input-row__bar:before  {
+      width: 50%;
+      height: 1px;
+    }
+    &:valid ~ .input-row__bar:after {
+      width: 50%;
+      height: 1px;
+    }
+  }
+  &__bar {
+    position: relative;
+    display: block;
+    max-width: 300px;
+    &:before, &:after {
+      content: '';
+      height: 2px;
+      width: 0;
+      bottom: 1px;
+      position: absolute;
+      background-color: black;
+      transition: .5s ease all;
+    }
+    &:before {
+      left: 50%;
+    }
+    &:after {
+      right: 50%;
+    }
+  }
+}
