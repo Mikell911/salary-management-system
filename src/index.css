@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 * {
   margin: 0;
   padding: 0;
@@ -17,12 +20,6 @@ button {
   background: transparent;
   cursor: pointer;
   display: block;
-}
-
-.container {
-  max-width: 1128px;
-  margin: 0 auto;
-  padding: 0 10px;
 }
 
 ul {

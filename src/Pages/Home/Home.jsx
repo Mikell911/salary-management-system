@@ -20,15 +20,24 @@ const Home = () => {
     const [isBreak, setIsBreak] = useState(false);
     const [isExtraTime, setIsExtraTime] = useState('');
     const [isValueBreakTime, setIsValueBreakTime] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState('');
+    const [isCheckedOvertime, setIsCheckedOvertime] = useState(false);
+    const [isOvertime, setIsOvertime] = useState(false);
+    const [isSelectedYear, setIsSelectedYear] = useState('')
 
-    // Load data from localStorage when the component mounts
+    const Month = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const year = days.map(year => year.day.split('.')[2]);
+    const uniqueYears = [...new Set(year)];
+
     useEffect(() => {
         const storedDays = localStorage.getItem('days');
         if (storedDays) {
             setDays(JSON.parse(storedDays));
         }
 
-        // Load stored user data
         const storedFirstName = localStorage.getItem('firstName');
         const storedLastName = localStorage.getItem('lastName');
         const storedSalary = localStorage.getItem('salary');
@@ -42,12 +51,10 @@ const Home = () => {
         if (storedPaymentType) setPaymentType(storedPaymentType);
     }, []);
 
-    // Save days data to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('days', JSON.stringify(days));
     }, [days]);
 
-    // Save user data to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('firstName', userFirstName);
         localStorage.setItem('lastName', userLastName);
@@ -99,7 +106,6 @@ const Home = () => {
     const handleChangePaymentType = (newValue) => {
         setPaymentType(newValue);
     };
-
     const handelDelete = (id) => {
         const updatedDays = days.filter(day => day.id !== id);
         setDays(updatedDays);
@@ -117,6 +123,28 @@ const Home = () => {
         setIsChecked(false);
         setIsValueBreakTime(0);
     };
+
+    const filteredAndSortedDays = days
+        .filter(day => {
+            const [, monthPart, yearPart] = day.day.split('.');
+            const monthIndex = parseInt(monthPart, 10) - 1;
+            const year = yearPart;
+
+            // Filter by month
+            const monthFilter = selectedMonth ? Month[monthIndex] === selectedMonth : true;
+
+            // Filter by year
+            const yearFilter = isSelectedYear ? year === isSelectedYear : true;
+
+            return monthFilter && yearFilter;
+        })
+        .sort((a, b) => {
+            const [dayA, monthA, yearA] = a.day.split('.');
+            const [dayB, monthB, yearB] = b.day.split('.');
+            const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+            const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+            return dateA - dateB;
+        });
 
     return (
         <section className={'home'}>
@@ -197,11 +225,21 @@ const Home = () => {
                                 onSelect={setIsTimeOutWork}
                                 title={'Out:'}
                             />
-                            <Selector
-                                selectebel={['0', '50%', '100%']}
-                                onSelect={setIsExtraTime}
-                                title={"Overtime:"}
+                        </div>
+                        <div>
+                            <CheckBox
+                                label={'Overtime:'}
+                                id={'inputCheckedOvertime'}
+                                checkInput={setIsCheckedOvertime}
+                                checkedInput={setIsOvertime}
                             />
+                            {isCheckedOvertime &&
+                                <Selector
+                                    selectebel={['0', '50%', '100%']}
+                                    onSelect={setIsExtraTime}
+                                    title={"Overtime:"}
+                                />
+                            }
                         </div>
 
                         <div className={'form__btn home__form-btn'}>
@@ -222,26 +260,43 @@ const Home = () => {
                 </div>
 
                 <div className={'content'}>
-                    <table className={'content__table'}>
+                    <div className={'flex justify-end gap-4'}>
+                        <Selector
+                            selectebel={Month}
+                            onSelect={setSelectedMonth}
+                            title={'Select month:'}
+                            value={selectedMonth}
+                        />
+                        <Selector
+                            selectebel={uniqueYears.map(year => year)}
+                            onSelect={setIsSelectedYear}
+                            title={'Select year:'}
+                            value={isSelectedYear}
+                        />
+                    </div>
+                    <table className={'w-full table-auto border-collapse border border-slate-500'}>
+                        <caption className="caption-top">
+                            Table with your hours and salary
+                        </caption>
                         <thead>
-                        <tr className={'content__table-header'}>
-                            <th>№</th>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Gross / Net</th>
-                            <th>Type</th>
-                            <th>Salary</th>
-                            <th>Date</th>
-                            <th>Come</th>
-                            <th>Leave</th>
-                            <th>Total</th>
+                        <tr className={'content__table-header border-collapse border border-slate-500 bg-slate-300'}>
+                            <th className={'border border-slate-600'}>Date</th>
+                            <th className={'border border-slate-600'}>Come</th>
+                            <th className={'border border-slate-600'}>Leave</th>
+                            <th className={'border border-slate-600'}>Name</th>
+                            <th className={'border border-slate-600'}>Surname</th>
+                            <th className={'border border-slate-600'}>Salary</th>
+                            <th className={'border border-slate-600'}>Type</th>
+                            <th className={'border border-slate-600'}>Gross / Net</th>
+                            <th className={'border border-slate-600'}>Total</th>
+                            <th className={'border border-slate-600 w-5'}></th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {days.map((day) => {
+                        <tbody className={'text-center'}>
+                        {filteredAndSortedDays.map((day) => {
                             const workTime = day.workTime || 0; // Work time or 0 if we don't have;
                             const breakTime = day.breakTime || 0; // Break time or 0 if we don't have;
-                            const typeSalary = day.type === 'Hour' ? `${day.salary}` : `${(day.salary / (day.days * 8))}` // Salary a hour or monthly;
+                            const typeSalary = day.type === 'Hour' ? `${day.salary}` : `${(day.salary / (day.days * 8))}`; // Salary an hour or monthly;
                             const daySalary = typeSalary * (workTime - breakTime); // Salary a day;
 
                             const extraTimePercentage = parseInt(day.extraTime, 10) / 100;
@@ -251,10 +306,10 @@ const Home = () => {
                                         return 0; //Overtime free;
 
                                     case 0.5:
-                                        return workTime > 8 ? (workTime - 8) * daySalary * 0.5 : 0; //Overtime 50%;
+                                        return (workTime - 8) * (daySalary / 8) * 0.5; //Overtime 50%;
 
                                     case 1:
-                                        return workTime * (daySalary * 2); //Overtime 100%;
+                                        return daySalary; //Overtime 100%;
 
                                     default:
                                         return 0;
@@ -264,19 +319,30 @@ const Home = () => {
                             const netSalary = day.value === 'Netto' ? totalSalary * 0.77 : totalSalary; // Податок 23%
 
                             return (
-                                <tr key={day.id} className={'content__table-body'}>
-                                    <td>{day.id}</td>
-                                    <td>{day.firstName}</td>
-                                    <td>{day.lastName}</td>
-                                    <td>{day.value}</td>
-                                    <td>{day.type}</td>
-                                    <td>{day.salary ? `${day.salary} zł` : ''}</td>
-                                    <td>{day.day}</td>
-                                    <td>{day.came}</td>
-                                    <td>{day.went}</td>
-                                    <td>{netSalary ? `${netSalary.toFixed(2)} zł` : '0 zł'}</td>
-                                    <td>
-                                        <button className={'content__btn'} onClick={() => handelDelete(day.id)}>X</button>
+                                <tr key={day.id} className={'content__table-body odd:bg-white even:bg-slate-200'}>
+                                    <td className={'border border-slate-700'}>{day.day}</td>
+                                    <td className={'border border-slate-700'}>{day.came}</td>
+                                    <td className={'border border-slate-700'}>{day.went}</td>
+                                    <td className={'border border-slate-700'}>{day.firstName}</td>
+                                    <td className={'border border-slate-700'}>{day.lastName}</td>
+                                    <td className={'border border-slate-700'}>{day.salary ? `${day.salary} zł` : ''}</td>
+                                    <td className={'border border-slate-700'}>{day.type}</td>
+                                    <td className={'border border-slate-700'}>{day.value}</td>
+                                    <td className={'border border-slate-700'}>{netSalary ? `${netSalary.toFixed(2)} zł` : '0 zł'}</td>
+                                    <td className={'border border-slate-700'}>
+                                        <button onClick={() => handelDelete(day.id)}>
+                                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                    <path d="M10 12V17" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                    <path d="M14 12V17" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                    <path d="M4 7H20" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                    <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                </g>
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                             )

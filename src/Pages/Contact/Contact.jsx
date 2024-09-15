@@ -77,7 +77,7 @@ const Contact = () => {
                         <div className={'contact__circle-small'}></div>
                     </div>
 
-                    <div className={'contact__right'}>
+                    <div className={'contact__right w-full'}>
                         <form className={'contact__form'}>
                             <div className={'contact__form-row'}>
                                 <Input label={'First Name:'}/>
