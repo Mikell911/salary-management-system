@@ -4,24 +4,42 @@ import imgFly from './img/fly.png'
 import './contact.scss'
 
 const Contact = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const myForm = event.target;
+        const formData = new FormData(myForm);
+
+        fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(formData).toString(),
+        })
+            .then(() => console.log("Form successfully submitted"))
+            .catch((error) => alert(error));
+    };
+
+    document
+        .querySelector("form")
+        .addEventListener("submit", handleSubmit);
     return (
         <section className={'contact'}>
             <div className="container contact__container">
                 <h1 className={'contact__title'}>
-                    Contact Us
+                    Skontaktuj się z nami
                 </h1>
                 <p className={'contact__sub-title'}>
-                    Any question or remarks? Just write us a message!
+                    Masz jakieś pytania lub uwagi? Napisz do nas wiadomość!
                 </p>
 
                 <div className={'contact__row'}>
                     <div className={'contact__left'}>
                         <h2 className={'contact__row-title'}>
-                            Contact information
+                            Informacje kontaktowe
                         </h2>
 
                         <p className={'contact__row-sub-title'}>
-                            Say something to start a live chat!
+                            Powiedz coś, aby rozpocząć czat na żywo!
                         </p>
 
                         <ul className={'contact__content'}>
@@ -78,17 +96,17 @@ const Contact = () => {
                     </div>
 
                     <div className={'contact__right w-full'}>
-                        <form className={'contact__form'}>
-                            <div className={'contact__form-row'}>
-                                <Input label={'First Name:'}/>
-                                <Input label={'Last Name:'}/>
+                        <form className={'contact__form'} name="contact" method="POST" data-netlify="true" onSubmit={handleSubmit}>
+                        <div className={'contact__form-row'}>
+                                <Input label={'Nazwisko:'} name={'name'}/>
+                                <Input label={'Imię:'} name={'lastName'}/>
                             </div>
                             <div className={'contact__form-row'}>
-                                <Input label={'Email:'}/>
-                                <Input label={'Phone number:'}/>
+                                <Input label={'Email:'} name={'email'}/>
+                                <Input label={'Telefon:'} name={'phone'}/>
                             </div>
-                            <Input label={'Message:'} maxWidth={'100%'}/>
-                            <button className={'contact__btn'}>Send Message</button>
+                            <Input label={'Wiadomość:'} maxWidth={'100%'} name={'wiadomość'}/>
+                            <button className={'contact__btn'} type={"submit"}>Wyslać</button>
                             <img src={imgFly} alt="fly" className={'contact__img'}/>
                         </form>
                     </div>

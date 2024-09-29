@@ -1,7 +1,7 @@
 import React from 'react';
 import './input.scss';
 
-const Input = ({ label, id, type = 'text', value, onChange, maxWidth }) => {
+const Input = ({ label, id, type = 'text', value, onChange, maxWidth, name }) => {
     return (
         <div className={'input-row relative w-full max-w-80 mt-2.5'} style={{ maxWidth }}>
             <input
@@ -12,6 +12,7 @@ const Input = ({ label, id, type = 'text', value, onChange, maxWidth }) => {
                 className={'input-row__input'}
                 required={true}
                 style={{ maxWidth: '100%' }}
+                name={name}
             />
             <label htmlFor={id} className={'input-row__label absolute top-2.5 left-3.5 text-blue-500 max-sm:text-sm'}>
                 {label}
