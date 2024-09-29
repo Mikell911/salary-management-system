@@ -1,24 +1,3 @@
-.header {
-  padding: 20px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav {
-  &__container {
-    display: flex;
-    gap: 30px;
-  }
-  &__item {
-  }
-  &__link {
-    &:hover {
-     
-    }
-  }
-}
-
 .hamburger-menu {
   height: 40px;
   width: 40px;

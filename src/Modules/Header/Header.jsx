@@ -10,10 +10,10 @@ const Header = () => {
         setIsOpen(prevState => !prevState)
     }
     return (
-        <header className={'header container'}>
+        <header className={'container py-2.5 px-1 flex justify-between items-center'}>
             <Logo/>
 
-            <nav className={'nav header__nav'}>
+            <nav className={'header__nav'}>
                 <div
                     onClick={handleOpenMenu}
                     className={`hamburger-menu ${isOpen ? 'active' : ''}`
@@ -22,7 +22,7 @@ const Header = () => {
                     <div className={'hamburger-menu__line hamburger-menu__line-middle'}></div>
                     <div className={'hamburger-menu__line hamburger-menu__line-bottom'}></div>
                 </div>
-                <ul className={'nav__container'}>
+                <ul className={'nav__container flex gap-4'}>
                     <li className={'nav__item'}>
                         <Link to={'/'} className={'nav__link'} onClick={handleOpenMenu}>
                             Home
